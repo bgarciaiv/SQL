@@ -1,0 +1,167 @@
+
+
+
+#Determined customers who are not located in the USA
+
+SELECT FirstName, CustomerId, Country
+FROM chinook.customers
+WHERE Country <>'USA';
+
+#Located customers who are only from Brazil
+
+SELECT FirstName, CustomerId, Country
+FROM chinook.customers
+WHERE Country ='Brazil';
+
+#Determined the invoices of customers who are from Brazil
+
+SELECT Cust.FirstName, Cust.LastName, invoices.InvoiceId, invoices.InvoiceDate, invoices.BillingCountry
+FROM chinook.invoices as invoices
+LEFT JOIN chinook.customers as cust
+ON invoices.CustomerId=cust.customerId
+WHERE invoices.BillingCountry='Brazil';
+
+#Determined employees who are sales agents
+
+SELECT*
+FROM chinook.employees
+WHERE title = 'Sales Support Agent';
+
+#Determined a distinct list of billing countries from the invoice table
+
+SELECT Distinct BillingCountry
+FROM chinook.invoices;
+
+
+#Determined the invoices associated with each sales agent
+
+SELECT Employees.FirstName, Employees.LastName, inv.invoiceId
+FROM chinook.invoices as inv
+INNER JOIN chinook.customers as cust
+ON inv.CustomerId = cust.CustomerId
+LEFT JOIN chinook.employees as employees
+ON cust.SupportRepId = employees.EmployeeId
+WHERE employees.Title = 'Sales Support Agent';
+
+#Located the invoice Total, Customer Name, Country, and Sales Agent name for all invoices and customers. 
+
+SELECT employees.LastName, employees.FirstName,cust.LastName, cust.FirstName, cust.country, inv.Total
+FROM chinook.invoices as inv
+LEFT JOIN chinook.customers as cust
+ON inv.CustomerId = cust.CustomerId
+
+LEFT JOIN chinook.employees as employees
+ON cust.SupportRepId = employees.EmployeeId
+WHERE employees.Title = 'Sales Support Agent';
+
+#Determined how many invoices there were in 2009
+
+SELECT Count(*)
+FROM chinook.invoices
+WHERE InvoiceDate Between '2009-01-01 00:00:00' AND '2009-12-31 00:00:00'
+
+
+#Determined the total sales for the invoices made in 2009
+
+SELECT SUM(Total)
+FROM chinook.invoices
+WHERE InvoiceDate Between '2009-01-01 00:00:00' AND '2009-12-31 00:00:00';
+
+#Determined the purchased track name along with the associated invoice line ID.
+
+SELECT tracks.Name, inv.InvoiceLineId
+FROM chinook.invoice_items as inv
+LEFT Join chinook.tracks as tracks
+ON inv.TrackId = tracks.TrackId;
+
+
+#Determined the purchased track and artist name associated with each invoice line ID.
+
+SELECT tracks.Name, artists.name, inv.InvoicelineId
+FROM chinook.invoice_items as inv
+LEFT JOIN chinook.tracks as tracks
+ON inv.TrackId = tracks.TrackId
+Left Join chinook.albums as albums
+ON tracks.AlbumId = albums.AlbumId
+Left Join chinook.artists as artists
+ON albums.ArtistId = artists.ArtistId
+ORDER BY artists.name;
+
+#Determined a list of tracks along with the associated album names, media types, and genres.
+
+SELECT tracks.Name, albums.Title, media.Name, genres.Name
+FROM chinook.tracks as tracks
+LEFT JOIN chinook.albums as albums
+ON tracks.AlbumId = albums.AlbumId
+
+LEFT Join chinook.media_types as media
+ON tracks.MediaTypeId = media.MediaTypeId
+LEFT Join chinook.genres as genres
+ON tracks.GenreId = genres.GenreId;
+
+
+#Determined the total sales made by each sales agent
+
+SELECT employees.FirstName, employees.LastName, ROUND (SUM(inv.Total),2) as TotalSales
+FROM chinook.invoices as inv
+LEFT JOIN chinook.customers as cust
+ON inv.CustomerId = cust.CustomerId
+LEFT JOIN chinook.employees as employees
+ON cust.SupportRepId = employees.EmployeeId
+WHERE employees.title = 'Sales Support Agent'
+GROUP BY employees.FirstName, employees.LastName
+ORDER BY employees.FirstName;
+
+# Determined which sales agent made the most dollars in 2009.
+
+SELECT employees.FirstName, employees.LastName, ROUND (SUM(inv.Total),2) as TotalSales
+FROM chinook.invoices as inv
+LEFT JOIN chinook.customers as cust
+ON inv.CustomerId = cust.CustomerId
+LEFT JOIN chinook.employees as employees
+ON cust.SupportRepId = employees.EmployeeId
+WHERE employees.title = 'Sales Support Agent'
+AND inv.InvoiceDate Between '2009-01-01 00:00:00' AND '2009-12-31 00:00:00'
+GROUP BY employees.FirstName, employees.LastName
+ORDER BY totalsales desc
+LIMIT 1;
+
+
+#Located all albums with genre classified as Rock.
+
+SELECT albums.Title, genres.Name
+FROM chinook.tracks as track
+LEFT JOIN chinook.albums as albums
+ON track.AlbumId = albums.AlbumId
+
+LEFT JOIN chinook.genres as genres
+On track.GenreId = genres.GenreId
+WHERE Genres.Name = 'Rock'
+GROUP BY albums.Title;
+
+
+#Determined the track names that are on the playlist named “Grunge”
+
+SELECT tracks.name as Track_Name, playlists.name as playlists_name
+FROM chinook.tracks as tracks
+LEFT JOIN chinook.playlist_track as PT
+ON tracks.TrackId = PT.TrackId
+LEFT JOIN chinook.playlists as playlists
+ON PT.PlaylistId = playlists.PlaylistId
+WHERE playlists_name = "Grunge";
+
+
+#Determined the highest single sale made in 2011.
+
+SELECT Max(Total)
+FROM chinook.invoices
+WHERE InvoiceDate Between '2011-01-01 00:00:00' AND '2011-12-31 00:00:00';
+
+
+
+
+
+
+
+
+
